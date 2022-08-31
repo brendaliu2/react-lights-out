@@ -27,21 +27,44 @@ import "./Board.css";
  *
  **/
 
-function Board({ nrows, ncols, chanceLightStartsOn }) {
+// TODO: create array-of-arrays of true/false values
+
+function Board({ nrows = 5, ncols = 5, chanceLightStartsOn }) {
   const [board, setBoard] = useState(createBoard());
+  const won = hasWon(board);
 
   /** create a board nrows high/ncols wide, each cell randomly lit or unlit */
   function createBoard() {
-    let initialBoard = [];
-    // TODO: create array-of-arrays of true/false values
-    return initialBoard;
+    const board = [];
+    const rows = new Array(nrows);
+    for (let i = 0; i < rows.length; i++) {
+      board.push(rows[i] = new Array(ncols));
+      for (let j = 0; j < rows[i].length; j++) {
+        board[i][j] = random();
+      }
+    }
+    // console.log(board);
+    console.log("board", board);
+    return board;
   }
 
-  function hasWon() {
+  console.log("won", won);
+  //flipCellsAround();
+
+  function hasWon(board) {
     // TODO: check the board in state to determine whether the player has won.
+    console.log("board2", board);
+    for (let row of board) {
+      for (let cell of row) {
+        if (cell) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
-
-  function flipCellsAround(coord) {
+  //coord is from cell itself, button onclick
+  function flipCellsAround(coord = '0-0') {
     setBoard(oldBoard => {
       const [y, x] = coord.split("-").map(Number);
 
@@ -55,12 +78,30 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
 
       // TODO: Make a (deep) copy of the oldBoard
 
+      const board2 = [...oldBoard];
+
       // TODO: in the copy, flip this cell and the cells around it
 
+      flipCell(y, x, board2);
+      flipCell(y - 1, x, board2);
+      flipCell(y + 1, x, board2);
+      flipCell(y, x - 1, board2);
+      flipCell(y, x + 1, board2);
+
       // TODO: return the copy
+      console.log("flipboard", board2);
+
+      return board2;
     });
   }
 
+  return (
+    board.map((val, i) =>
+      val.map((value, idx) =>
+        <Cell idx={`${i}-${idx}`} flipCellsAroundMe={flipCellsAround} isLit={value} />
+      )
+    )
+  );
   // if the game is won, just show a winning msg & render nothing else
 
   // TODO
@@ -68,6 +109,12 @@ function Board({ nrows, ncols, chanceLightStartsOn }) {
   // make table board
 
   // TODO
+}
+
+function random() {
+  const val = [true, false];
+  const random = Math.floor(Math.random() * 2);
+  return val[random];
 }
 
 export default Board;
